@@ -3,107 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0a0c0a">
-    <title>Kashtan VFD Pro</title>
+    <meta name="theme-color" content="#050505">
+    <link rel="manifest" href="manifest.json">
+    <title>Orga de lumini Pro</title>
     <style>
-        body { background: #1a1c1a; color: #78a890; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 10px; overflow: hidden; touch-action: none; }
-        .vfd-container { background: #0a0c0a; padding: 15px; border-radius: 10px; border: 3px solid #333; box-shadow: 0 0 30px rgba(0,0,0,0.8); width: 95vw; max-width: 600px; box-sizing: border-box; }
-        .odometer { display: flex; background: #050505; padding: 5px; border: 2px solid #222; margin-bottom: 15px; height: 30px; }
-        .digit-container { position: relative; width: 20px; height: 30px; overflow: hidden; }
-        .digit-strip { display: flex; flex-direction: column; align-items: center; transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); }
-        .digit-strip span { height: 30px; line-height: 30px; font-size: 20px; color: #4ecdc4; font-family: monospace; }
-        canvas { background: #080a08; width: 100%; height: auto; border-radius: 4px; }
-        .controls { margin-top: 15px; background: #222; padding: 15px; border-radius: 10px; width: 90vw; max-width: 400px; }
-        #startBtn { margin-top: 15px; padding: 20px; width: 90vw; max-width: 400px; background: #2d3e2d; color: #78a890; border: 2px solid #4a634a; border-radius: 8px; font-weight: bold; font-size: 1.2rem; cursor: pointer; }
+        body { 
+            background: #050505; 
+            color: white; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            margin: 0; 
+            padding: 10px; 
+            overflow: hidden; 
+            touch-action: none; 
+        }
+        canvas { 
+            width: 95vw; 
+            height: auto; 
+            max-width: 800px; 
+            border-radius: 15px; 
+            background: #000; 
+            box-shadow: 0 0 30px rgba(0,0,0,0.5); 
+            margin-top: 20px;
+        }
+        .controls { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 15px; 
+            width: 95%; 
+            max-width: 500px;
+            margin-top: 20px; 
+            background: #111; 
+            padding: 15px; 
+            border-radius: 12px; 
+        }
+        .control-group { display: flex; flex-direction: column; align-items: center; }
+        label { font-size: 12px; color: #888; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px; }
+        input[type=range] { width: 100%; height: 30px; cursor: pointer; }
+        
+        #startBtn { 
+            margin-top: 25px; 
+            padding: 18px 40px; 
+            background: #222; 
+            color: #fff; 
+            border: 2px solid #444; 
+            border-radius: 10px; 
+            font-size: 18px;
+            font-weight: bold; 
+            width: 90%; 
+            max-width: 400px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+        #startBtn:active { transform: scale(0.95); background: #333; }
     </style>
 </head>
 <body>
-    <div class="odometer" id="odometer">
-        <div class="digit-container" id="d4"><div class="digit-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div></div>
-        <div class="digit-container" id="d3"><div class="digit-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div></div>
-        <div class="digit-container" id="d2"><div class="digit-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div></div>
-        <div class="digit-container" id="d1"><div class="digit-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div></div>
-        <div class="digit-container" id="d0"><div class="digit-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div></div>
-    </div>
-    <div class="vfd-container"><canvas id="canvas" width="600" height="220"></canvas></div>
+    <canvas id="canvas" width="800" height="300"></canvas>
+    
     <div class="controls">
-        <label style="font-size: 10px; color: #666;">SENSITIVITY</label>
-        <input type="range" id="masterGain" min="1" max="100" value="40" style="width:100%">
+        <div class="control-group"><label>BASS</label><input type="range" id="gB" min="1" max="20" value="8"></div>
+        <div class="control-group"><label>MID</label><input type="range" id="gM" min="1" max="40" value="20"></div>
+        <div class="control-group"><label>HIGH</label><input type="range" id="gT" min="1" max="200" value="100"></div>
+        <div class="control-group"><label>SILENCE</label><input type="range" id="gS" min="1" max="10" value="5"></div>
     </div>
-    <button id="startBtn">START SYSTEM</button>
+
+    <button id="startBtn">START ANALYZER</button>
 
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const btn = document.getElementById('startBtn');
-        let startTime = null;
-        let peakL = 0, peakR = 0;
-        const gravity = 0.4;
+        let curR = [10, 10, 10, 10];
+        const fallSpeed = 0.07;
 
-        function updateOdometer() {
-            if (!startTime) return;
-            let seconds = Math.floor((Date.now() - startTime) / 1000);
-            let sStr = seconds.toString().padStart(5, '0');
-            for (let i = 0; i < 5; i++) {
-                const el = document.getElementById('d' + (4-i));
-                if(el) el.querySelector('.digit-strip').style.transform = `translateY(-${parseInt(sStr[i]) * 30}px)`;
-            }
+        // Înregistrare Service Worker pentru PWA/APK
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log("SW error", err));
         }
 
         btn.onclick = async () => {
             try {
+                // 1. Cerem permisiunea pentru microfon
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                // 2. Inițializăm contextul audio (fix pentru Chrome/Samsung)
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 const audioCtx = new AudioContext();
-                if (audioCtx.state === 'suspended') await audioCtx.resume();
-
-                startTime = Date.now();
-                setInterval(updateOdometer, 1000);
+                
+                // 3. IMPORTANT pentru A52s: Forțăm activarea contextului
+                if (audioCtx.state === 'suspended') {
+                    await audioCtx.resume();
+                }
 
                 const source = audioCtx.createMediaStreamSource(stream);
-                const analyserL = audioCtx.createAnalyser();
-                const analyserR = audioCtx.createAnalyser();
-                const splitter = audioCtx.createChannelSplitter(2);
-                source.connect(splitter);
-                splitter.connect(analyserL, 0);
-                splitter.connect(analyserR, 1);
-
-                const dataL = new Uint8Array(analyserL.frequencyBinCount);
-                const dataR = new Uint8Array(analyserR.frequencyBinCount);
+                const analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 1024;
+                source.connect(analyser);
+                
+                const data = new Uint8Array(analyser.frequencyBinCount);
+                
+                // Ascundem butonul după activare
                 btn.style.display = 'none';
 
                 function draw() {
                     requestAnimationFrame(draw);
-                    analyserL.getByteFrequencyData(dataL);
-                    analyserR.getByteFrequencyData(dataR);
-                    let gain = document.getElementById('masterGain').value / 10;
-                    let vL = (dataL.reduce((a,b)=>a+b)/dataL.length) * gain;
-                    let vR = (dataR.reduce((a,b)=>a+b)/dataR.length) * gain;
-
-                    ctx.fillStyle = "#080a08";
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    analyser.getByteFrequencyData(data);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
                     
-                    // Efect scanline VFD
-                    ctx.fillStyle = "rgba(255,255,255,0.02)";
-                    for(let i=0; i<canvas.height; i+=4) ctx.fillRect(0, i, canvas.width, 1);
+                    // Procesare benzi frecvență
+                    let bVal = (data.slice(0, 10).reduce((a, b) => a + b) / 10) * document.getElementById('gB').value;
+                    let mVal = (data.slice(10, 100).reduce((a, b) => a + b) / 90) * document.getElementById('gM').value;
+                    let tPeak = Math.max(...data.slice(100, 500));
+                    let tVal = tPeak * (document.getElementById('gT').value / 50);
+                    let sVal = Math.max(0, (160 - ((bVal + mVal + tVal)/3)) * (document.getElementById('gS').value/5));
 
-                    [vL, vR].forEach((v, i) => {
-                        let y = i === 0 ? 55 : 155;
-                        if (i === 0) peakL = v > peakL ? v : peakL - gravity;
-                        else peakR = v > peakR ? v : peakR - gravity;
-                        let cur = i === 0 ? peakL : peakR;
+                    const targets = [bVal/2, mVal/2, tVal/2, sVal/2];
+                    const colors = ['#ff4444', '#ffff44', '#44ff44', '#4444ff'];
 
-                        for (let j = 0; j < 18; j++) {
-                            ctx.fillStyle = j < (cur/5) ? (j > 13 ? "#ffc832" : "#78a890") : "#111";
-                            ctx.shadowBlur = j < (cur/5) ? 10 : 0;
-                            ctx.shadowColor = j > 13 ? "#ffc832" : "#78a890";
-                            ctx.fillRect(200 + (j * 20), y, 12, 30);
-                        }
+                    targets.forEach((target, i) => {
+                        let tr = Math.min(Math.max(5, target), 85);
+                        // Efect de cădere lină a discurilor
+                        if (tr > curR[i]) curR[i] = tr; 
+                        else curR[i] -= (curR[i] - tr) * fallSpeed;
+
+                        // Desenare discuri strălucitoare
+                        ctx.shadowBlur = curR[i] * 0.8; 
+                        ctx.shadowColor = colors[i];
+                        ctx.beginPath(); 
+                        ctx.arc(100 + (i * 200), 150, curR[i], 0, Math.PI * 2);
+                        ctx.fillStyle = colors[i]; 
+                        ctx.fill();
                     });
                 }
                 draw();
-            } catch (e) { alert("Acces microfon refuzat!"); }
+            } catch (err) {
+                console.error(err);
+                alert("Eroare: Aplicația are nevoie de permisiune pentru microfon. Verifică setările Android pentru acest APK.");
+            }
         };
     </script>
 </body>
